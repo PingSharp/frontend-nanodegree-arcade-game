@@ -38,12 +38,17 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
+    
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+        
+        
+
+        
         update(dt);
         render();
 
@@ -51,11 +56,13 @@ var Engine = (function(global) {
          * for the next time this function is called.
          */
         lastTime = now;
-
+        
+        
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
+        
     }
 
     /* This function does some initial setup that should only occur once,
@@ -67,7 +74,7 @@ var Engine = (function(global) {
         lastTime = Date.now();
         main();
     }
-
+    
     /* This function is called by main (our game loop) and itself calls all
      * of the functions which may need to update entity's data. Based on how
      * you implement your collision detection (when two entities occupy the
@@ -79,8 +86,9 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        //  checkCollisions();
     }
+    
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -93,6 +101,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        allGems.forEach(function(gem){
+            gem.update();
+        })
         player.update();
     }
 
@@ -152,6 +163,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        allGems.forEach(function(gem){
+            gem.render();
+        })
 
         player.render();
     }
@@ -162,6 +176,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -173,7 +188,17 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/congratulations.jpg',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/GameOver.png'
+
     ]);
     Resources.onReady(init);
 
