@@ -3,14 +3,17 @@
  * by player
  */
 var Enemy = function () {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+    /**
+     * Variables applied to each of our instances go here,
+     * we've provided one for you to get started
+     */
     this.x = -100;
     this.y = (Math.floor(Math.random() * 3) + 1) * 75;
     this.speed = Math.floor(Math.random() * 300) + 190;
+    /**
+     * The image/sprite for our enemies, this uses
+     * a helper we've provided to easily load images
+     */
     this.sprite = 'images/enemy-bug.png';
 };
 /**
@@ -18,22 +21,33 @@ var Enemy = function () {
  * Parameter: dt, a time delta between ticks
  */
 Enemy.prototype.update = function (dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+    /**
+     * You should multiply any movement by the dt parameter
+     * which will ensure the game runs at the same speed for
+     * all computers.
+     */
     this.x += dt * this.speed;
     if (this.x > 505) {
         let index = allEnemies.indexOf(this);
-        // remove enemy which are out of the canvas because not sure
-        // if they need ressources
+        /**
+         * remove enemy which are out of the canvas because not sure
+         * if they need ressources
+         */
         allEnemies.splice(index, 1);
-
+        /**
+         * after delete need new enemy
+         */
         let newEnemy = new Enemy();
         setTimeout(allEnemies.push(newEnemy), Math.floor(Math.random() * 2000) + 1);
     }
     else {
-        // check if allEnemies can be reduced to this --> so simple change e.x to this.x
+        /**
+         * after moving check collision with player
+         */
         if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
+                /**
+                 * set back to start position
+                 */
                 player.x = 202;
                 player.y = 4.5 * 83;
                 player.update(0, 0);
@@ -45,7 +59,9 @@ Enemy.prototype.update = function (dt) {
 
     };
 
-// Draw the enemy on the screen, required method for game
+/**
+ * Draw the enemy on the screen, required method for game
+ */
 Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -54,11 +70,15 @@ Enemy.prototype.enemyInit = function (enemy) {
     allEnemies[index] = new Enemy();
 };
 
+/**
+ * Now write your own player class
+ * This class requires an update(), render() and
+ * a handleInput() method.
+ */
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-
+ /**
+  * constructor of player
+  */
 var Player = function () {
     this.speedX = 101;
     this.speedY = 83;
@@ -66,16 +86,25 @@ var Player = function () {
     this.y = 4.5 * 83;
     this.won = false;
     this.lose = false;
-    this.charselected = false; // charSelected
+    this.charSelected = false;
     this.sprite = 'images/char-boy.png';
     this.score = 0;
 };
+/**
+ * Compute next position according to directions
+ * @param {1,0,-1} factorx Direction of x movement
+ * @param {1,0,-1} factory Direction of y movement
+ */
 Player.prototype.update = function (factorx=0, factory=0) {
    this. x += factorx * this.speedX;
    this. y += factory * this.speedY;
 };
+/**
+ * Force browser to update score
+ * Update the player and check if win or lose
+ */
 Player.prototype.render = function () {
-    if (player.charselected === false) {
+    if (player.charSelected === false) {
         player.showPlayerOption();
     }
     let currentScore = document.querySelector("#score");
@@ -92,12 +121,12 @@ Player.prototype.render = function () {
     }
 };
 Player.prototype.showPlayerOption = function () {
-    var canvas = document.querySelector("canvas");
+    canvas = document.querySelector("canvas");
     canvas.style.display = "none";
-    var score = document.querySelector(".player-score");
-    score.style.display = "none";
-    var select = document.querySelector(".custom-select");
-    var selectOption = document.querySelectorAll("input");
+    scoreAndTime = document.querySelector(".player-score");
+    scoreAndTime.style.display = "none";
+    select = document.querySelector(".custom-select");
+    let selectOption = document.querySelectorAll("input");
     select.style.display = "block";
     if (gameTime !== 16) {
         gameTime = 16;
@@ -108,23 +137,27 @@ Player.prototype.showPlayerOption = function () {
     selectOption.forEach(s => s.addEventListener("click", this.selectPlayer));
 
 };
+/**
+ * Set sprite according to seleted value
+ * Set counter
+ * Set blocks and game area
+ */
 Player.prototype.selectPlayer = function () {
     let value = event.target.value;
     player.sprite = value;
-    player.charselected = true;
+    player.charSelected = true;
     interval = setInterval(countDown, 1000);
-    var canvas = document.querySelector("canvas");
     canvas.style.display = "initial";
-    var score = document.querySelector(".player-score");
-    score.style.display = "block";
-    var select = document.querySelector(".custom-select");
-    var selectOption = document.querySelector("form");
+    scoreAndTime.style.display = "block";
+    let selectOption = document.querySelector("form");
     select.style.display = "none";
     selectOption.removeEventListener("change", this.selectPlayer);
 };
-// put the 83 and values to properties "speed" and
-// call update with ("-","0") or ("0","+")
-// compution of new values happen in update!
+/**
+ * Handle input key and ensure player is not out the game
+ * also call update step with correct parameter
+ * @param {string} input Last pushed key for direction, can be left, up, right, down
+ */
 Player.prototype.handleInput = function (input) {
     if (input === "left" && this.x > 0) {
         this.update(-1, 0);
@@ -140,6 +173,10 @@ Player.prototype.handleInput = function (input) {
     }
 
 };
+/**
+ * Delete player and create new one
+ * or just create
+ */
 Player.prototype.playerInit = function () {
     if (player !== null) {
         player = null;
@@ -151,24 +188,31 @@ Player.prototype.playerInit = function () {
         return player;
     }
 };
+/**
+ * Update canvas for situation when player win
+ */
 Player.prototype.playerWin = function () {
-    var canvas = document.querySelector("canvas");
     canvas.style.display = "none";
     clearInterval(interval);
-    var img = Resources.get("images/congratulations.jpg");
-    document.body.appendChild(img);
+    CongraImg = Resources.get("images/congratulations.jpg");
+    document.body.appendChild(CongraImg);
     document.addEventListener("click", player.showPlayAgain);
 };
+/**
+ * Update canvas for situation when player lose
+ */
 Player.prototype.playerLose = function () {
-    var canvas = document.querySelector("canvas");
     canvas.style.display = "none";
     clearInterval(interval);
-    let time = document.querySelector(".player-score");
-    time.style.display = "none";
-    var img = Resources.get("images/GameOver.png");
-    document.body.appendChild(img);
+    scoreAndTime.style.display = "none";
+    GameOverImg = Resources.get("images/GameOver.png");
+    document.body.appendChild(GameOverImg);
     document.addEventListener("click", player.showPlayAgain);
 }
+/**
+ * Ask human player for next game
+ * if yes 
+ */
 Player.prototype.showPlayAgain = function () {
     if (confirm("Do you want to play again?")) {
         document.removeEventListener("click", player.showPlayAgain);
@@ -186,15 +230,12 @@ Player.prototype.showPlayAgain = function () {
             allGems.forEach(e => e = new Gem());
         }
         player.playerInit();
-        var img = Resources.get("images/congratulations.jpg");
-        var gameOverImg = Resources.get("images/GameOver.png");
-        if (document.body.childNodes[12] === img) {
-            document.body.removeChild(img);
+        if (document.body.childNodes[12] === CongraImg) {
+            document.body.removeChild(CongraImg);
         }
         else {
-            document.body.removeChild(gameOverImg);
+            document.body.removeChild(GameOverImg);
         }
-        var canvas = document.querySelector("canvas");
         canvas.style.display = "initial";
         gameTime = 16;
     }
@@ -240,10 +281,15 @@ function countDown() {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-var allEnemies = [new Enemy(), new Enemy(), new Enemy()];
-var player = new Player();
-var allGems = [new Gem(), new Gem()];
+let allEnemies = [new Enemy(), new Enemy(), new Enemy()];
+let player = new Player();
+let allGems = [new Gem(), new Gem()];
 let gameTime = 16;
+let canvas;
+let select;
+let scoreAndTime;
+let CongraImg;
+let GameOverImg;
 let interval;
 
 // This listens for key presses and sends the keys to your
