@@ -39,25 +39,24 @@ Enemy.prototype.update = function (dt) {
          */
         let newEnemy = new Enemy();
         setTimeout(allEnemies.push(newEnemy), Math.floor(Math.random() * 2000) + 1);
-    }
-    else {
+    } else {
         /**
          * after moving check collision with player
          */
         if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
-                /**
-                 * set back to start position
-                 */
-                player.x = 202;
-                player.y = 4.5 * 83;
-                player.update(0, 0);
-                if (player.score > 0) {
-                    player.score -= 10;
-                }
+            /**
+             * set back to start position
+             */
+            player.x = 202;
+            player.y = 4.5 * 83;
+            player.update(0, 0);
+            if (player.score > 0) {
+                player.score -= 10;
             }
         }
+    }
 
-    };
+};
 
 /**
  * Draw the enemy on the screen, required method for game
@@ -65,6 +64,9 @@ Enemy.prototype.update = function (dt) {
 Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+/**
+ * Add enemy to list
+ */
 Enemy.prototype.enemyInit = function (enemy) {
     let index = allEnemies.indexOf(enemy);
     allEnemies[index] = new Enemy();
@@ -76,9 +78,9 @@ Enemy.prototype.enemyInit = function (enemy) {
  * a handleInput() method.
  */
 
- /**
-  * constructor of player
-  */
+/**
+ * constructor of player
+ */
 var Player = function () {
     this.speedX = 101;
     this.speedY = 83;
@@ -95,9 +97,9 @@ var Player = function () {
  * @param {1,0,-1} factorx Direction of x movement
  * @param {1,0,-1} factory Direction of y movement
  */
-Player.prototype.update = function (factorx=0, factory=0) {
-   this. x += factorx * this.speedX;
-   this. y += factory * this.speedY;
+Player.prototype.update = function (factorx = 0, factory = 0) {
+    this.x += factorx * this.speedX;
+    this.y += factory * this.speedY;
 };
 /**
  * Force browser to update score
@@ -112,7 +114,9 @@ Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     if (player.y <= 15 && player.won === false) {
         player.score += 5;
-        setTimeout(function () { player.won = true; }, 500);
+        setTimeout(function () {
+            player.won = true;
+        }, 500);
         setTimeout(player.playerWin, 500);
     }
     if (gameTime === 0 && player.lose === false && player.y > 15) {
@@ -120,6 +124,9 @@ Player.prototype.render = function () {
         player.playerLose();
     }
 };
+/**
+ * Get the canvas and ask player for sprite
+ */
 Player.prototype.showPlayerOption = function () {
     canvas = document.querySelector("canvas");
     canvas.style.display = "none";
@@ -132,7 +139,7 @@ Player.prototype.showPlayerOption = function () {
         gameTime = 16;
     }
     let showtime = document.querySelector("#time");
-        showtime.innerHTML = gameTime + "s";
+    showtime.innerHTML = gameTime + "s";
     selectOption.forEach(s => s.checked = false);
     selectOption.forEach(s => s.addEventListener("click", this.selectPlayer));
 
@@ -161,14 +168,11 @@ Player.prototype.selectPlayer = function () {
 Player.prototype.handleInput = function (input) {
     if (input === "left" && this.x > 0) {
         this.update(-1, 0);
-    }
-    else if (input === "up" && this.y > 0) {
+    } else if (input === "up" && this.y > 0) {
         this.update(0, -1);
-    }
-    else if (input === "right" && this.x < 404) {
+    } else if (input === "right" && this.x < 404) {
         this.update(1, 0);
-    }
-    else if (input === "down" && this.y < 4.5 * 83) {
+    } else if (input === "down" && this.y < 4.5 * 83) {
         this.update(0, 1);
     }
 
@@ -182,8 +186,7 @@ Player.prototype.playerInit = function () {
         player = null;
         player = new Player();
         return player;
-    }
-    else {
+    } else {
         player = new Player();
         return player;
     }
@@ -221,26 +224,21 @@ Player.prototype.showPlayAgain = function () {
         });
         if (allGems.length === 0) {
             allGems = [new Gem(), new Gem()];
-        }
-        else if (allGems.length === 1) {
+        } else if (allGems.length === 1) {
             let newGem = new Gem();
             allGems.push(newGem);
-        }
-        else {
+        } else {
             allGems.forEach(e => e = new Gem());
         }
         player.playerInit();
         if (document.body.childNodes[12] === CongraImg) {
             document.body.removeChild(CongraImg);
-        }
-        else {
+        } else {
             document.body.removeChild(GameOverImg);
         }
         canvas.style.display = "initial";
         gameTime = 16;
-    }
-    else {
-    }
+    } else {}
 };
 /**
  * constructor of collectable gems
@@ -252,25 +250,33 @@ var Gem = function () {
     let gemcollection = ["images/Gem Blue.png", "images/Gem Green.png", "images/Gem Orange.png"];
     this.sprite = gemcollection[Math.floor(Math.random() * 3)];
 };
-// same to gem - this is not oop
+/**
+ * Updates the gem
+ * if two gems same location let the 1st one be generated again
+ * Check if it is touched by player
+ */
 Gem.prototype.update = function () {
     if (allGems.length > 1) {
         if (allGems[0].x === allGems[1].x && allGems[0].y === allGems[1].y) {
             allGems[0] = new Gem();
         }
     }
-
-   
     if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
-            player.score += 20;
-            let index = allGems.indexOf(this);
-            allGems.splice(index, 1);
-}
-    };
+        player.score += 20;
+        let index = allGems.indexOf(this);
+        allGems.splice(index, 1);
+    }
+};
+/**
+ * Render gem
+ */
 Gem.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
-
+/**
+ * Callback for count down and update HTML according to gameTime
+ * Interval is set in SelectPlayer
+ */
 function countDown() {
     gameTime -= 1;
     let showtime = document.querySelector("#time");
