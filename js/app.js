@@ -299,16 +299,16 @@ let CongraImg;
 let GameOverImg;
 let interval;
 const gameStartMusic = new Howl({
-    src: ['../music/Arcade-Madness.mp3'],
+    src: ['music/Arcade-Madness.mp3'],
     autoplay: true,
     loop: true,
     volume: 0.1
 });
 const collectedGemMusic = new Howl({
-    src: ['../music/SynthChime2.mp3']
+    src: ['music/SynthChime2.mp3']
 })
 const collisionMusic = new Howl({
-    src: ['../music/PowerDown7.mp3']
+    src: ['music/PowerDown7.mp3']
 })
 
 
