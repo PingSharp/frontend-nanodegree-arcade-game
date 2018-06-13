@@ -50,6 +50,7 @@ Enemy.prototype.update = function (dt) {
             player.x = 202;
             player.y = 4.5 * 83;
             player.update(0, 0);
+            collisionMusic.play();
             if (player.score > 0) {
                 player.score -= 10;
             }
@@ -142,7 +143,6 @@ Player.prototype.showPlayerOption = function () {
     showtime.innerHTML = gameTime + "s";
     selectOption.forEach(s => s.checked = false);
     selectOption.forEach(s => s.addEventListener("click", this.selectPlayer));
-
 };
 /**
  * Set sprite according to seleted value
@@ -263,6 +263,7 @@ Gem.prototype.update = function () {
     }
     if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
         player.score += 20;
+        collectedGemMusic.play();
         let index = allGems.indexOf(this);
         allGems.splice(index, 1);
     }
@@ -297,6 +298,20 @@ let scoreAndTime;
 let CongraImg;
 let GameOverImg;
 let interval;
+const gameStartMusic = new Howl({
+    src: ['../music/Arcade-Madness.mp3'],
+    autoplay: true,
+    loop: true,
+    volume: 0.1
+});
+const collectedGemMusic = new Howl({
+    src: ['../music/SynthChime2.mp3']
+})
+const collisionMusic = new Howl({
+    src: ['../music/PowerDown7.mp3']
+})
+
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
