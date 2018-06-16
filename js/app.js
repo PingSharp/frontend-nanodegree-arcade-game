@@ -238,7 +238,7 @@ Player.prototype.showPlayAgain = function () {
         }
         canvas.style.display = "initial";
         gameTime = 16;
-    } else {}
+    } else { }
 };
 /**
  * constructor of collectable gems
