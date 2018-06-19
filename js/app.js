@@ -1,3 +1,4 @@
+"use strict";
 /**
  * constructor for enemis which shall be avoided
  * by player
@@ -30,18 +31,18 @@ Enemy.prototype.update = function (dt) {
     if (this.x > 505) {
         // When the enemy is out of the canvas ,new enemy will be added after some time.
         let index = allEnemies.indexOf(this);
-       allEnemies[index] = new Enemy();
+        allEnemies[index] = new Enemy();
     }
-    else{
-        
-    } 
-     /**
-     * after moving check collision with player
-    */
-     this.checkCollisions(); 
+    else {
+
+    }
+    /**
+    * after moving check collision with player
+   */
+    this.checkCollisions();
 };
-Enemy.prototype.checkCollisions = function(){
-    if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y - 50  && this.y < player.y + 77) {
+Enemy.prototype.checkCollisions = function () {
+    if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y - 50 && this.y < player.y + 77) {
         /**
          * set back to start position
          */
@@ -104,8 +105,8 @@ Player.prototype.render = function () {
         showPlayerOption();
     }
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    if (this.y <= 15 && this.won === false ) {
-       scoreCaculate(1);
+    if (this.y <= 15 && this.won === false) {
+        scoreCaculate(1);
     }
     if (gameTime === 0 && this.lose === false && this.y > 15) {
         this.lose = true;
@@ -154,12 +155,12 @@ Gem.prototype.update = function () {
         if (allGems[0].x === allGems[1].x && allGems[0].y === allGems[1].y) {
             allGems[0] = new Gem();
         }
-        else{
+        else {
 
         };
     }
     if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y - 50 && this.y < player.y + 76) {
-       
+
         scoreCaculate(2);
         collectedGemMusic.play();
         let index = allGems.indexOf(this);
@@ -185,7 +186,7 @@ function countDown() {
 /**
  * Get the canvas and ask player for sprite
  */
-    function showPlayerOption () {
+function showPlayerOption() {
     canvas = document.querySelector("canvas");
     canvas.style.display = "none";
     scoreAndTime = document.querySelector(".player-score");
@@ -206,7 +207,7 @@ function countDown() {
  * Set counter
  * Set blocks and game area
  */
-    function selectPlayer () {
+function selectPlayer() {
     let value = event.target.value;
     player.sprite = value;
     player.charSelected = true;
@@ -221,7 +222,7 @@ function countDown() {
 /**
  * Update canvas for situation when player win
  */
- function playerWin () {
+function playerWin() {
     canvas.style.display = "none";
     clearInterval(interval);
     CongraImg = Resources.get("images/congratulations.jpg");
@@ -231,7 +232,7 @@ function countDown() {
 /**
  * Update canvas for situation when player lose
  */
- function playerLose () {
+function playerLose() {
     canvas.style.display = "none";
     clearInterval(interval);
     scoreAndTime.style.display = "none";
@@ -243,7 +244,7 @@ function countDown() {
  * Ask human player for next game
  * if yes 
  */
-  function showPlayAgain () {
+function showPlayAgain() {
     if (confirm("Do you want to play again?")) {
         document.removeEventListener("click", showPlayAgain);
         allEnemies.forEach(function (enemy) {
@@ -267,23 +268,23 @@ function countDown() {
         gameTime = 16;
     } else { }
 };
-function scoreCaculate(situation){
-    switch(situation){
+function scoreCaculate(situation) {
+    switch (situation) {
         case 1:
-        player.score += 10;
-        setTimeout(function () {
-            player.won = true;
-        }, 100);
-        setTimeout(playerWin, 100);
-        break;
+            player.score += 10;
+            setTimeout(function () {
+                player.won = true;
+            }, 100);
+            setTimeout(playerWin, 100);
+            break;
         case 2:
-        player.score += 20;
-        break;
+            player.score += 20;
+            break;
         case 3:
-        if (player.score > 0) {
-            player.score -= 10;
-        }
-        break;
+            if (player.score > 0) {
+                player.score -= 10;
+            }
+            break;
     }
     currentScore = document.querySelector("#score");
     currentScore.innerHTML = player.score;
@@ -292,9 +293,9 @@ function scoreCaculate(situation){
  * Delete player and create new one
  * or just create
  */
- function playerInit () {
+function playerInit() {
     if (player !== null) {
-        player  = new Player();
+        player = new Player();
         return player;
     } else {
         player = new Player();
