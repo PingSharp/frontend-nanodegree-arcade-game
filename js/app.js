@@ -126,7 +126,7 @@ Player.prototype.handleInput = function (input) {
         this.update(0, -1);
     } else if (input === "right" && this.x < 404) {
         this.update(1, 0);
-    } else if (input === "down" && this.y < 4.5 * 63) {
+    } else if (input === "down" && this.y < 4.5 * 83) {
         this.update(0, 1);
     }
 
