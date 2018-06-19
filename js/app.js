@@ -7,9 +7,9 @@ var Enemy = function () {
      * Variables applied to each of our instances go here,
      * we've provided one for you to get started
      */
-    this.x = -100;
+    this.x = -105;
     this.y = (Math.floor(Math.random() * 3) + 1) * 75;
-    this.speed = Math.floor(Math.random() * 300) + 190;
+    this.speed = Math.floor(Math.random() * 300) + 150;
     /**
      * The image/sprite for our enemies, this uses
      * a helper we've provided to easily load images
@@ -28,37 +28,30 @@ Enemy.prototype.update = function (dt) {
      */
     this.x += dt * this.speed;
     if (this.x > 505) {
+        // When the enemy is out of the canvas ,new enemy will be added after some time.
         let index = allEnemies.indexOf(this);
-        /**
-         * remove enemy which are out of the canvas because not sure
-         * if they need ressources
-         */
-        allEnemies.splice(index, 1);
-        /**
-         * after delete need new enemy
-         */
-        let newEnemy = new Enemy();
-        setTimeout(allEnemies.push(newEnemy), Math.floor(Math.random() * 2000) + 1);
-    } else {
-        /**
-         * after moving check collision with player
-         */
-        if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
-            /**
-             * set back to start position
-             */
-            player.x = 202;
-            player.y = 4.5 * 83;
-            player.update(0, 0);
-            collisionMusic.play();
-            if (player.score > 0) {
-                player.score -= 10;
-            }
-        }
+       allEnemies[index] = new Enemy();
     }
-
+    else{
+        
+    } 
+     /**
+     * after moving check collision with player
+    */
+     this.checkCollisions(); 
 };
-
+Enemy.prototype.checkCollisions = function(){
+    if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y - 50  && this.y < player.y + 77) {
+        /**
+         * set back to start position
+         */
+        player.x = 202;
+        player.y = 4.5 * 83;
+        player.update(0, 0);
+        collisionMusic.play();
+        scoreCaculate(3);
+    }
+}
 /**
  * Draw the enemy on the screen, required method for game
  */
@@ -84,7 +77,7 @@ Enemy.prototype.enemyInit = function (enemy) {
  */
 var Player = function () {
     this.speedX = 101;
-    this.speedY = 83;
+    this.speedY = 63;
     this.x = 2 * 101;
     this.y = 4.5 * 83;
     this.won = false;
@@ -107,59 +100,20 @@ Player.prototype.update = function (factorx = 0, factory = 0) {
  * Update the player and check if win or lose
  */
 Player.prototype.render = function () {
-    if (player.charSelected === false) {
-        player.showPlayerOption();
+    if (this.charSelected === false) {
+        showPlayerOption();
     }
-    let currentScore = document.querySelector("#score");
-    currentScore.innerHTML = player.score;
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    if (player.y <= 15 && player.won === false) {
-        player.score += 5;
-        setTimeout(function () {
-            player.won = true;
-        }, 500);
-        setTimeout(player.playerWin, 500);
+    if (this.y <= 15 && this.won === false ) {
+       scoreCaculate(1);
     }
-    if (gameTime === 0 && player.lose === false && player.y > 15) {
-        player.lose = true;
-        player.playerLose();
+    if (gameTime === 0 && this.lose === false && this.y > 15) {
+        this.lose = true;
+        playerLose();
     }
 };
-/**
- * Get the canvas and ask player for sprite
- */
-Player.prototype.showPlayerOption = function () {
-    canvas = document.querySelector("canvas");
-    canvas.style.display = "none";
-    scoreAndTime = document.querySelector(".player-score");
-    scoreAndTime.style.display = "none";
-    select = document.querySelector(".custom-select");
-    let selectOption = document.querySelectorAll("input");
-    select.style.display = "block";
-    if (gameTime !== 16) {
-        gameTime = 16;
-    }
-    let showtime = document.querySelector("#time");
-    showtime.innerHTML = gameTime + "s";
-    selectOption.forEach(s => s.checked = false);
-    selectOption.forEach(s => s.addEventListener("click", this.selectPlayer));
-};
-/**
- * Set sprite according to seleted value
- * Set counter
- * Set blocks and game area
- */
-Player.prototype.selectPlayer = function () {
-    let value = event.target.value;
-    player.sprite = value;
-    player.charSelected = true;
-    interval = setInterval(countDown, 1000);
-    canvas.style.display = "initial";
-    scoreAndTime.style.display = "block";
-    let selectOption = document.querySelector("form");
-    select.style.display = "none";
-    selectOption.removeEventListener("change", this.selectPlayer);
-};
+
+
 /**
  * Handle input key and ensure player is not out the game
  * also call update step with correct parameter
@@ -172,74 +126,14 @@ Player.prototype.handleInput = function (input) {
         this.update(0, -1);
     } else if (input === "right" && this.x < 404) {
         this.update(1, 0);
-    } else if (input === "down" && this.y < 4.5 * 83) {
+    } else if (input === "down" && this.y < 4.5 * 63) {
         this.update(0, 1);
     }
 
 };
-/**
- * Delete player and create new one
- * or just create
- */
-Player.prototype.playerInit = function () {
-    if (player !== null) {
-        player = null;
-        player = new Player();
-        return player;
-    } else {
-        player = new Player();
-        return player;
-    }
-};
-/**
- * Update canvas for situation when player win
- */
-Player.prototype.playerWin = function () {
-    canvas.style.display = "none";
-    clearInterval(interval);
-    CongraImg = Resources.get("images/congratulations.jpg");
-    document.body.appendChild(CongraImg);
-    document.addEventListener("click", player.showPlayAgain);
-};
-/**
- * Update canvas for situation when player lose
- */
-Player.prototype.playerLose = function () {
-    canvas.style.display = "none";
-    clearInterval(interval);
-    scoreAndTime.style.display = "none";
-    GameOverImg = Resources.get("images/GameOver.png");
-    document.body.appendChild(GameOverImg);
-    document.addEventListener("click", player.showPlayAgain);
-}
-/**
- * Ask human player for next game
- * if yes 
- */
-Player.prototype.showPlayAgain = function () {
-    if (confirm("Do you want to play again?")) {
-        document.removeEventListener("click", player.showPlayAgain);
-        allEnemies.forEach(function (enemy) {
-            enemy.enemyInit(enemy);
-        });
-        if (allGems.length === 0) {
-            allGems = [new Gem(), new Gem()];
-        } else if (allGems.length === 1) {
-            let newGem = new Gem();
-            allGems.push(newGem);
-        } else {
-            allGems.forEach(e => e = new Gem());
-        }
-        player.playerInit();
-        if (document.body.childNodes[12] === CongraImg) {
-            document.body.removeChild(CongraImg);
-        } else {
-            document.body.removeChild(GameOverImg);
-        }
-        canvas.style.display = "initial";
-        gameTime = 16;
-    } else { }
-};
+
+
+
 /**
  * constructor of collectable gems
  * use random location for more fun
@@ -260,9 +154,13 @@ Gem.prototype.update = function () {
         if (allGems[0].x === allGems[1].x && allGems[0].y === allGems[1].y) {
             allGems[0] = new Gem();
         }
+        else{
+
+        };
     }
-    if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y && this.y < player.y + 76) {
-        player.score += 20;
+    if (this.x > player.x - 50 && this.x < player.x + 51 && this.y > player.y - 50 && this.y < player.y + 76) {
+       
+        scoreCaculate(2);
         collectedGemMusic.play();
         let index = allGems.indexOf(this);
         allGems.splice(index, 1);
@@ -273,7 +171,7 @@ Gem.prototype.update = function () {
  */
 Gem.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 /**
  * Callback for count down and update HTML according to gameTime
  * Interval is set in SelectPlayer
@@ -284,6 +182,126 @@ function countDown() {
     showtime.innerHTML = gameTime + "s";
     return gameTime;
 }
+/**
+ * Get the canvas and ask player for sprite
+ */
+    function showPlayerOption () {
+    canvas = document.querySelector("canvas");
+    canvas.style.display = "none";
+    scoreAndTime = document.querySelector(".player-score");
+    scoreAndTime.style.display = "none";
+    select = document.querySelector(".custom-select");
+    let selectOption = document.querySelectorAll("input");
+    select.style.display = "block";
+    if (gameTime !== 16) {
+        gameTime = 16;
+    }
+    let showtime = document.querySelector("#time");
+    showtime.innerHTML = gameTime + "s";
+    selectOption.forEach(s => s.checked = false);
+    selectOption.forEach(s => s.addEventListener("click", selectPlayer));
+};
+/**
+ * Set sprite according to seleted value
+ * Set counter
+ * Set blocks and game area
+ */
+    function selectPlayer () {
+    let value = event.target.value;
+    player.sprite = value;
+    player.charSelected = true;
+    interval = setInterval(countDown, 1000);
+    scoreCaculate();
+    canvas.style.display = "initial";
+    scoreAndTime.style.display = "block";
+    let selectOption = document.querySelector("form");
+    select.style.display = "none";
+    selectOption.removeEventListener("change", selectPlayer);
+};
+/**
+ * Update canvas for situation when player win
+ */
+ function playerWin () {
+    canvas.style.display = "none";
+    clearInterval(interval);
+    CongraImg = Resources.get("images/congratulations.jpg");
+    document.body.appendChild(CongraImg);
+    document.addEventListener("click", showPlayAgain);
+};
+/**
+ * Update canvas for situation when player lose
+ */
+ function playerLose () {
+    canvas.style.display = "none";
+    clearInterval(interval);
+    scoreAndTime.style.display = "none";
+    GameOverImg = Resources.get("images/GameOver.png");
+    document.body.appendChild(GameOverImg);
+    document.addEventListener("click", showPlayAgain);
+}
+/**
+ * Ask human player for next game
+ * if yes 
+ */
+  function showPlayAgain () {
+    if (confirm("Do you want to play again?")) {
+        document.removeEventListener("click", showPlayAgain);
+        allEnemies.forEach(function (enemy) {
+            enemy.enemyInit(enemy);
+        });
+        if (allGems.length === 0) {
+            allGems = [new Gem(), new Gem()];
+        } else if (allGems.length === 1) {
+            let newGem = new Gem();
+            allGems.push(newGem);
+        } else {
+            allGems.forEach(e => e = new Gem());
+        }
+        playerInit();
+        if (document.body.childNodes[12] === CongraImg) {
+            document.body.removeChild(CongraImg);
+        } else {
+            document.body.removeChild(GameOverImg);
+        }
+        canvas.style.display = "initial";
+        gameTime = 16;
+    } else { }
+};
+function scoreCaculate(situation){
+    switch(situation){
+        case 1:
+        player.score += 10;
+        setTimeout(function () {
+            player.won = true;
+        }, 100);
+        setTimeout(playerWin, 100);
+        break;
+        case 2:
+        player.score += 20;
+        break;
+        case 3:
+        if (player.score > 0) {
+            player.score -= 10;
+        }
+        break;
+    }
+    currentScore = document.querySelector("#score");
+    currentScore.innerHTML = player.score;
+}
+/**
+ * Delete player and create new one
+ * or just create
+ */
+ function playerInit () {
+    if (player !== null) {
+        player  = new Player();
+        return player;
+    } else {
+        player = new Player();
+        return player;
+    }
+};
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -298,6 +316,7 @@ let scoreAndTime;
 let CongraImg;
 let GameOverImg;
 let interval;
+let currentScore;
 const gameStartMusic = new Howl({
     src: ['music/Arcade-Madness.mp3'],
     autoplay: true,
