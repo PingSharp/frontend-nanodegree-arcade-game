@@ -9,7 +9,7 @@ var Enemy = function () {
      * we've provided one for you to get started
      */
     this.x = -105;
-    this.y = (Math.floor(Math.random() * 3) + 1) * 75;
+    this.y = (Math.floor(Math.random() * 3) + 1) * 71;
     this.speed = Math.floor(Math.random() * 300) + 150;
     /**
      * The image/sprite for our enemies, this uses
@@ -31,7 +31,9 @@ Enemy.prototype.update = function (dt) {
     if (this.x > 505) {
         // When the enemy is out of the canvas ,new enemy will be added after some time.
         let index = allEnemies.indexOf(this);
-        allEnemies[index] = new Enemy();
+        allEnemies[index].x = -105;
+        allEnemies[index].y =  (Math.floor(Math.random() * 3) + 1) * 71;
+        allEnemies[index].speed = Math.floor(Math.random() * 300) + 150;
     }
     else {
 
@@ -78,7 +80,7 @@ Enemy.prototype.enemyInit = function (enemy) {
  */
 var Player = function () {
     this.speedX = 101;
-    this.speedY = 63;
+    this.speedY = 69;
     this.x = 2 * 101;
     this.y = 4.5 * 83;
     this.won = false;
@@ -242,7 +244,7 @@ function playerLose() {
 }
 /**
  * Ask human player for next game
- * if yes 
+ * if yes then everything will be set to init.
  */
 function showPlayAgain() {
     if (confirm("Do you want to play again?")) {
@@ -268,6 +270,10 @@ function showPlayAgain() {
         gameTime = 16;
     } else { }
 };
+/**
+ * Caculate the player's score 
+ * and show player the score.
+ */
 function scoreCaculate(situation) {
     switch (situation) {
         case 1:
